@@ -5,36 +5,33 @@ import java.util.Scanner;
 
 public class ConnectFourCmd {
 
-	private static void printSpielfeld(int[][] spielfeld){
-		String[] symb = new String[]{ "   ", " X ", " O " };
-		System.out.print("   ");
-		for (int x = 0; x < ConnectFourLib.SPIELFELD_BREITE; x++) {
-			System.out.print(" " + x + " ");
-		}
-		System.out.println();
-		for (int y = ConnectFourLib.SPIELFELD_HOEHE-1; y >= 0; y--) {
-			System.out.print(" " + y + " ");
-			for (int x = 0; x < ConnectFourLib.SPIELFELD_BREITE; x++) {
-				System.out.print(symb[spielfeld[y][x]]);
-			}
-			System.out.println();
-		}
-	}
-
 	public static void main(String[] args){
 		Scanner cin = new Scanner(System.in);
 		System.out.println("Vier gewinnt");
 		System.out.println("------------");
 		System.out.print("Wer beginnt? (1 Mensch, 2 Computer): ");
 		int spieler = cin.nextInt();
+		if (spieler != 1 && spieler != 2){
+			System.out.println("Ungültiger Spieler");
+			return;
+		}
 		int[][] spielfeld = new int[ConnectFourLib.SPIELFELD_HOEHE][ConnectFourLib.SPIELFELD_BREITE];
+
+		/*
+		spielfeld[0][0] = 1;
+		spielfeld[0][1] = 1;
+		spielfeld[0][3] = 1;
+		spielfeld[0][5] = 2;
+		spielfeld[1][5] = 2;
+		spielfeld[2][5] = 2;
+		*/
 
 		while (true){
 			if (spieler == 1) {
-				printSpielfeld(spielfeld);
+				ConnectFourLib.printSpielfeld(System.out, spielfeld);
 				do {
 					try {
-						System.out.print("Nächster Zug? (0 - " + (ConnectFourLib.SPIELFELD_BREITE - 1) + "): ");
+						System.out.printf("Nächster Zug? (0 - %d): ", ConnectFourLib.SPIELFELD_BREITE - 1);
 						int x;
 						x = cin.nextInt();
 						ConnectFourLib.spiel(spieler, spielfeld, x);
@@ -57,8 +54,8 @@ public class ConnectFourCmd {
 			}
 		}
 
-		printSpielfeld(spielfeld);
+		ConnectFourLib.printSpielfeld(System.out, spielfeld);
 
-		System.out.println("Spieler " + (ConnectFourLib.gewonnen(1, spielfeld) ? 1 : 2) + " hat gewonnen");
+		System.out.printf("Spieler %d hat gewonnen.%n", ConnectFourLib.gewonnen(1, spielfeld) ? 1 : 2);
 	}
 }
