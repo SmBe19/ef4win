@@ -13,8 +13,9 @@ public class ConnectFourLib {
 	public static final int SPIELFELD_BREITE = 7;
 	public static final int X_GEWINNT = 4;
 	public static int MINMAX_TIEFE = 4;
+	public static boolean MINMAX_ALPHA_BETA = true;
 
-	private static final boolean DEBUG1 = true;
+	private static final boolean DEBUG1 = false;
 	private static final boolean DEBUG2 = false;
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -231,16 +232,15 @@ public class ConnectFourLib {
 		return spielfeldScoreUtilOnePlayer(spieler, spielfeld, xdir, ydir) - spielfeldScoreUtilOnePlayer(3 - spieler, spielfeld, xdir, ydir);
 	}
 
-	protected static int spielfeldScore(int spieler, int[][] spielfeld){
+	private static int spielfeldScore(int spieler, int[][] spielfeld){
 		int score = spielfeldScoreUtil(spieler, spielfeld, 1, 0) + spielfeldScoreUtil(spieler, spielfeld, 0, 1)
 				+ spielfeldScoreUtil(spieler, spielfeld, 1, 1) + spielfeldScoreUtil(spieler, spielfeld, -1, 1);
 		return score;
 	}
 
-	static List<Integer> history = new ArrayList<>();
+	private static List<Integer> history = new ArrayList<>();
 
-	// TODO: Alpha / Beta
-	protected static int minmax(int spieler, int[][] spielfeld, int spielX, int depth, int alpha, int beta){
+	private static int minmax(int spieler, int[][] spielfeld, int spielX, int depth, int alpha, int beta){
 		int val;
 		spiel(spieler, spielfeld, spielX);
 		if (DEBUG2) {
@@ -249,11 +249,14 @@ public class ConnectFourLib {
 		if (depth <= 0 || gewonnen(spielfeld)) {
 			val = spielfeldScore(spieler, spielfeld);
 		} else {
-			val = Integer.MAX_VALUE;
+			val = MINMAX_ALPHA_BETA ? beta : Integer.MAX_VALUE;
 			for (int x = 0; x < SPIELFELD_BREITE; x++) {
 				if (spielfeld[SPIELFELD_HOEHE-1][x] == 0) {
-					int newval = -minmax(3 - spieler, spielfeld, x, depth - 1, alpha, beta);
+					int newval = -minmax(3 - spieler, spielfeld, x, depth - 1, -val, -alpha);
 					val = Math.min(val, newval);
+					if (MINMAX_ALPHA_BETA && val <= alpha){
+						break;
+					}
 				}
 			}
 		}
@@ -285,7 +288,7 @@ public class ConnectFourLib {
 			if (spielfeld[SPIELFELD_HOEHE-1][x] != 0) {
 				continue;
 			}
-			int newval = minmax(spieler, spielfeldCopy, x, MINMAX_TIEFE, Integer.MIN_VALUE, Integer.MAX_VALUE);
+			int newval = minmax(spieler, spielfeldCopy, x, MINMAX_TIEFE, -Integer.MAX_VALUE, Integer.MAX_VALUE);
 			if (newval > maxval){
 				maxval = newval;
 				maxcols.clear();
