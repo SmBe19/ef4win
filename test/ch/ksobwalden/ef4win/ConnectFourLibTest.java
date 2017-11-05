@@ -330,4 +330,37 @@ public class ConnectFourLibTest{
 			}
 		}
 	}
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	@Test
+	public void test_minmax_colin1(){
+		/*
+		 +  0  1  2  3  4  5  6  +
+		 5                       5
+		 4                 X     4
+		 3                 O     3
+		 2                 X     2
+		 1                 X     1
+		 0     O  O  O     X     0
+		 +  0  1  2  3  4  5  6  +
+
+		 Play 5, minmax will play 3 instead of 0 or 4
+		 */
+
+		int[][] ts = createSpielfeld();
+		ts[0][1] = 2;
+		ts[0][2] = 2;
+		ts[0][3] = 2;
+		ts[0][5] = 1;
+		ts[1][5] = 1;
+		ts[2][5] = 1;
+		ts[3][5] = 2;
+		ts[4][5] = 1;
+		ts[5][5] = 1;
+
+		int spielzug = ConnectFourLib.computerProfiSpielzug(ts);
+
+		Assert.assertTrue("Expected 0 or 4, got " + spielzug, spielzug == 0 || spielzug == 4);
+	}
 }

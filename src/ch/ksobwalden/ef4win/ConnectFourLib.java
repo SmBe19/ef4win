@@ -196,10 +196,10 @@ public class ConnectFourLib {
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	private static int spielfeldScoreUtilOnePlayer(int spieler, int[][] spielfeld, int xdir, int ydir){
+	private static long spielfeldScoreUtilOnePlayer(int spieler, int[][] spielfeld, int xdir, int ydir){
 		int xdirabs = Math.abs(xdir);
 		int ydirabs = Math.abs(ydir);
-		int score = 0;
+		long score = 0;
 		for (int y = 0; y < SPIELFELD_HOEHE - (X_GEWINNT-1) * ydirabs; y++) {
 			for (int x = 0; x < SPIELFELD_BREITE - (X_GEWINNT-1) * xdirabs; x++) {
 				int count = 0;
@@ -228,31 +228,33 @@ public class ConnectFourLib {
 		return score;
 	}
 
-	private static int spielfeldScoreUtil(int spieler, int[][] spielfeld, int xdir, int ydir) {
+	private static long spielfeldScoreUtil(int spieler, int[][] spielfeld, int xdir, int ydir) {
 		return spielfeldScoreUtilOnePlayer(spieler, spielfeld, xdir, ydir) - spielfeldScoreUtilOnePlayer(3 - spieler, spielfeld, xdir, ydir);
 	}
 
-	private static int spielfeldScore(int spieler, int[][] spielfeld){
-		int score = spielfeldScoreUtil(spieler, spielfeld, 1, 0) + spielfeldScoreUtil(spieler, spielfeld, 0, 1)
+	private static long spielfeldScore(int spieler, int[][] spielfeld){
+		long score = spielfeldScoreUtil(spieler, spielfeld, 1, 0) + spielfeldScoreUtil(spieler, spielfeld, 0, 1)
 				+ spielfeldScoreUtil(spieler, spielfeld, 1, 1) + spielfeldScoreUtil(spieler, spielfeld, -1, 1);
 		return score;
 	}
 
 	private static List<Integer> history = new ArrayList<>();
 
-	private static int minmax(int spieler, int[][] spielfeld, int spielX, int depth, int alpha, int beta){
-		int val;
+	private static long minmax(int spieler, int[][] spielfeld, int spielX, int depth, long alpha, long beta){
+		long val;
 		spiel(spieler, spielfeld, spielX);
 		if (DEBUG2) {
 			history.add(spielX);
 		}
-		if (depth <= 0 || gewonnen(spielfeld)) {
+		if (depth <= 0) {
 			val = spielfeldScore(spieler, spielfeld);
+		} else if (gewonnen(spielfeld)) {
+			val = depth * 1000000000L;
 		} else {
-			val = MINMAX_ALPHA_BETA ? beta : Integer.MAX_VALUE;
+			val = MINMAX_ALPHA_BETA ? beta : Long.MAX_VALUE;
 			for (int x = 0; x < SPIELFELD_BREITE; x++) {
 				if (spielfeld[SPIELFELD_HOEHE-1][x] == 0) {
-					int newval = -minmax(3 - spieler, spielfeld, x, depth - 1, -val, -alpha);
+					long newval = -minmax(3 - spieler, spielfeld, x, depth - 1, -val, -alpha);
 					val = Math.min(val, newval);
 					if (MINMAX_ALPHA_BETA && val <= alpha){
 						break;
@@ -280,7 +282,7 @@ public class ConnectFourLib {
 	public static int computerProfiSpielzug(int spieler, int[][] spielfeld){
 		checkValidSpielfeldOrThrow(spielfeld);
 		checkValidSpielerOrThrow(spieler);
-		int maxval = Integer.MIN_VALUE;
+		long maxval = Integer.MIN_VALUE;
 		List<Integer> maxcols = new ArrayList<>();
 		int[][] spielfeldCopy = new int[SPIELFELD_HOEHE][SPIELFELD_BREITE];
 		arraycopy(spielfeld, spielfeldCopy);
@@ -288,7 +290,7 @@ public class ConnectFourLib {
 			if (spielfeld[SPIELFELD_HOEHE-1][x] != 0) {
 				continue;
 			}
-			int newval = minmax(spieler, spielfeldCopy, x, MINMAX_TIEFE, -Integer.MAX_VALUE, Integer.MAX_VALUE);
+			long newval = minmax(spieler, spielfeldCopy, x, MINMAX_TIEFE, -Integer.MAX_VALUE, Integer.MAX_VALUE);
 			if (newval > maxval){
 				maxval = newval;
 				maxcols.clear();
