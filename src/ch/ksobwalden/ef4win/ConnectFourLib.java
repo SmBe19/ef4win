@@ -282,7 +282,7 @@ public class ConnectFourLib {
 	public static int computerProfiSpielzug(int spieler, int[][] spielfeld){
 		checkValidSpielfeldOrThrow(spielfeld);
 		checkValidSpielerOrThrow(spieler);
-		long maxval = Integer.MIN_VALUE;
+		long maxval = Long.MIN_VALUE;
 		List<Integer> maxcols = new ArrayList<>();
 		int[][] spielfeldCopy = new int[SPIELFELD_HOEHE][SPIELFELD_BREITE];
 		arraycopy(spielfeld, spielfeldCopy);
